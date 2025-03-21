@@ -1,5 +1,9 @@
 import { Tabs } from 'expo-router';
-import { ChartBar as BarChart2, ChartLine as LineChart, ChartPie as PieChart } from 'lucide-react-native';
+import {
+  ChartBar as BarChart2,
+  ChartLine as LineChart,
+  ChartPie as PieChart,
+} from 'lucide-react-native';
 
 export default function TabLayout() {
   return (
@@ -10,24 +14,6 @@ export default function TabLayout() {
           title: 'Analysis',
           tabBarIcon: ({ size, color }) => (
             <LineChart size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="control-charts"
-        options={{
-          title: 'Control Charts',
-          tabBarIcon: ({ size, color }) => (
-            <BarChart2 size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="distribution"
-        options={{
-          title: 'Distribution',
-          tabBarIcon: ({ size, color }) => (
-            <PieChart size={size} color={color} />
           ),
         }}
       />

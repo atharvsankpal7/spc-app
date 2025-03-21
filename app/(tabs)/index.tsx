@@ -8,6 +8,7 @@ import { ControlCharts } from '../../components/ControlCharts';
 import { DistributionChart } from '../../components/DistributionChart';
 import { fetchShiftData, fetchMaterialList, fetchOperationList, fetchGuageList, fetchInspectionData } from '../../api/spcApi';
 import { Search, Filter } from 'lucide-react-native';
+import '@babel/runtime/helpers/interopRequireDefault';
 
 interface ShiftData {
   ShiftId: number;
