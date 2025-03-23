@@ -82,14 +82,14 @@ export default function AnalysisScreen() {
   };
 
   useEffect(() => {
-    if (startDate && endDate) {
+    if (startDate && endDate && selectedShifts.length > 0) {
       loadMaterials();
     }
-  }, [startDate, endDate]);
+  }, [startDate, endDate, selectedShifts]);
 
   const loadMaterials = async () => {
     try {
-      const materialData = await fetchMaterialList(startDate, endDate);
+      const materialData = await fetchMaterialList(startDate, endDate, selectedShifts);
       setMaterials(materialData);
     } catch (error) {
       setError('Error loading materials');
@@ -98,14 +98,14 @@ export default function AnalysisScreen() {
   };
 
   useEffect(() => {
-    if (material) {
+    if (material && selectedShifts.length > 0) {
       loadOperations();
     }
-  }, [material]);
+  }, [material, selectedShifts]);
 
   const loadOperations = async () => {
     try {
-      const operationData = await fetchOperationList(startDate, endDate, material);
+      const operationData = await fetchOperationList(startDate, endDate, material, selectedShifts);
       setOperations(operationData);
     } catch (error) {
       setError('Error loading operations');
@@ -114,14 +114,14 @@ export default function AnalysisScreen() {
   };
 
   useEffect(() => {
-    if (operation) {
+    if (operation && selectedShifts.length > 0) {
       loadGauges();
     }
-  }, [operation]);
+  }, [operation, selectedShifts]);
 
   const loadGauges = async () => {
     try {
-      const gaugeData = await fetchGuageList(startDate, endDate, material, operation);
+      const gaugeData = await fetchGuageList(startDate, endDate, material, operation, selectedShifts);
       setGauges(gaugeData);
     } catch (error) {
       setError('Error loading gauges');
@@ -232,7 +232,8 @@ export default function AnalysisScreen() {
         endDate,
         material,
         operation,
-        gauge
+        gauge,
+        selectedShifts
       );
 
       const filteredData = inspectionData.filter((data: { ShiftCode: number; }) => 
@@ -405,8 +406,8 @@ export default function AnalysisScreen() {
       </View>
     </ScrollView>
   );
-
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
