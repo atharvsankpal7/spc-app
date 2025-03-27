@@ -10,9 +10,10 @@ interface HistogramChartProps {
   lsl: number;
   usl: number;
   target: number;
+  numberOfBins: number;
 }
 
-export function HistogramChart({ data, lsl, usl, target }: HistogramChartProps) {
+export function HistogramChart({ data, lsl, usl, target, numberOfBins }: HistogramChartProps) {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Histogram</Text>
@@ -37,7 +38,7 @@ export function HistogramChart({ data, lsl, usl, target }: HistogramChartProps) 
         <VictoryBar
           data={data}
           style={{ data: { fill: '#93C5FD' } }}
-          barWidth={8}
+          barWidth={300 / numberOfBins}
         />
         <VictoryLine
           x={() => lsl}

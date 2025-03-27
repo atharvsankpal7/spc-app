@@ -67,7 +67,6 @@ export default function AnalysisScreen() {
   const [endDate, setEndDate] = useState(new Date());
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [distributionBins, setDistributionBins] = useState(5);
 
   const [shifts, setShifts] = useState<ShiftData[]>([]);
   const [materials, setMaterials] = useState<MaterialData[]>([]);
@@ -84,6 +83,7 @@ export default function AnalysisScreen() {
     distribution: {
       data: any[];
       stats: any;
+      numberOfBins: number;
     };
   } | null>(null);
 
@@ -149,94 +149,30 @@ export default function AnalysisScreen() {
     }
   };
 
-  const calculateAnalysisData = (inspectionData: InspectionData[]) => {
-    if (!inspectionData.length) return null;
-
-    const specifications = inspectionData.map(d => parseFloat(d.ActualSpecification));
-    const mean = specifications.reduce((a, b) => a + b, 0) / specifications.length;
-    const stdDev = Math.sqrt(
-      specifications.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / (specifications.length - 1)
-    );
-
-    // Calculate control chart data
-    const xBarData = specifications.map((spec, i) => ({ x: i + 1, y: spec }));
-    const rangeData = specifications.slice(1).map((spec, i) => ({
-      x: i + 1,
-      y: Math.abs(spec - specifications[i])
-    }));
-
-    const rangeMean = rangeData.reduce((a, b) => a + b.y, 0) / rangeData.length;
-    const xBarUcl = mean + (2.66 * rangeMean);
-    const xBarLcl = mean - (2.66 * rangeMean);
-    const rangeUcl = 3.267 * rangeMean;
-    const rangeLcl = 0;
-
-    // Calculate process capability indices
-    const usl = parseFloat(inspectionData[0].ToSpecification);
-    const lsl = parseFloat(inspectionData[0].FromSpecification);
-    const cp = (usl - lsl) / (6 * stdDev);
-    const cpu = (usl - mean) / (3 * stdDev);
-    const cpl = (mean - lsl) / (3 * stdDev);
-    const cpk = Math.min(cpu, cpl);
-
-    return {
-      metrics: {
-        xBar: mean.toFixed(2),
-        stdDevOverall: stdDev.toFixed(2),
-        stdDevWithin: stdDev.toFixed(2),
-        movingRange: rangeMean.toFixed(2),
-        cp: cp.toFixed(2),
-        cpkUpper: cpu.toFixed(2),
-        cpkLower: cpl.toFixed(2),
-        cpk: cpk.toFixed(2),
-        pp: cp.toFixed(2),
-        ppu: cpu.toFixed(2),
-        ppl: cpl.toFixed(2),
-        ppk: cpk.toFixed(2),
-        lsl: lsl.toFixed(2),
-        usl: usl.toFixed(2)
-      },
-      controlCharts: {
-        xBarData,
-        rangeData,
-        limits: {
-          xBarUcl: xBarUcl.toFixed(2),
-          xBarLcl: xBarLcl.toFixed(2),
-          xBarMean: mean.toFixed(2),
-          rangeUcl: rangeUcl.toFixed(2),
-          rangeLcl: rangeLcl.toFixed(2),
-          rangeMean: rangeMean.toFixed(2)
-        }
-      },
-      distribution: {
-        data: calculateDistributionData(specifications, distributionBins),
-        stats: {
-          mean: mean.toFixed(2),
-          stdDev: stdDev.toFixed(2),
-          target: ((usl + lsl) / 2).toFixed(2)
-        }
-      }
-    };
-  };
-
-  const calculateDistributionData = (specifications: number[], bins: number) => {
+  const calculateDistributionData = (specifications: number[]) => {
+    // Calculate number of bins using square root rule
+    const numberOfBins = Math.ceil(Math.sqrt(specifications.length));
+    
     const min = Math.min(...specifications);
     const max = Math.max(...specifications);
-    const binWidth = (max - min) / bins;
+    const binWidth = (max - min) / numberOfBins;
     
-    const binCounts = new Array(bins).fill(0);
+    const binCounts = new Array(numberOfBins).fill(0);
     specifications.forEach(spec => {
       const binIndex = Math.min(
         Math.floor((spec - min) / binWidth),
-        bins - 1
+        numberOfBins - 1
       );
       binCounts[binIndex]++;
     });
 
-    return binCounts.map((count, i) => ({
-      x: min + (i * binWidth) + (binWidth / 2),
-      y: count
-    }));
+    return {
+      data: binCounts.map((count, i) => ({
+        x: min + (i * binWidth) + (binWidth / 2),
+        y: count
+      })),
+      numberOfBins
+    };
   };
 
   const handleAnalyze = async () => {
@@ -262,30 +198,81 @@ export default function AnalysisScreen() {
         selectedShifts.includes(data.ShiftCode)
       );
 
-      const analysis = calculateAnalysisData(filteredData);
+      const specifications = filteredData.map(d => parseFloat(d.ActualSpecification));
+      const mean = specifications.reduce((a, b) => a + b, 0) / specifications.length;
+      const stdDev = Math.sqrt(
+        specifications.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / (specifications.length - 1)
+      );
+
+      // Calculate control chart data
+      const xBarData = specifications.map((spec, i) => ({ x: i + 1, y: spec }));
+      const rangeData = specifications.slice(1).map((spec, i) => ({
+        x: i + 1,
+        y: Math.abs(spec - specifications[i])
+      }));
+
+      const rangeMean = rangeData.reduce((a, b) => a + b.y, 0) / rangeData.length;
+      const xBarUcl = mean + (2.66 * rangeMean);
+      const xBarLcl = mean - (2.66 * rangeMean);
+      const rangeUcl = 3.267 * rangeMean;
+      const rangeLcl = 0;
+
+      // Calculate process capability indices
+      const usl = parseFloat(filteredData[0].ToSpecification);
+      const lsl = parseFloat(filteredData[0].FromSpecification);
+      const cp = (usl - lsl) / (6 * stdDev);
+      const cpu = (usl - mean) / (3 * stdDev);
+      const cpl = (mean - lsl) / (3 * stdDev);
+      const cpk = Math.min(cpu, cpl);
+
+      const distributionData = calculateDistributionData(specifications);
+
+      const analysis = {
+        metrics: {
+          xBar: mean.toFixed(2),
+          stdDevOverall: stdDev.toFixed(2),
+          stdDevWithin: stdDev.toFixed(2),
+          movingRange: rangeMean.toFixed(2),
+          cp: cp.toFixed(2),
+          cpkUpper: cpu.toFixed(2),
+          cpkLower: cpl.toFixed(2),
+          cpk: cpk.toFixed(2),
+          pp: cp.toFixed(2),
+          ppu: cpu.toFixed(2),
+          ppl: cpl.toFixed(2),
+          ppk: cpk.toFixed(2),
+          lsl: lsl.toFixed(2),
+          usl: usl.toFixed(2)
+        },
+        controlCharts: {
+          xBarData,
+          rangeData,
+          limits: {
+            xBarUcl: xBarUcl.toFixed(2),
+            xBarLcl: xBarLcl.toFixed(2),
+            xBarMean: mean.toFixed(2),
+            rangeUcl: rangeUcl.toFixed(2),
+            rangeLcl: rangeLcl.toFixed(2),
+            rangeMean: rangeMean.toFixed(2)
+          }
+        },
+        distribution: {
+          data: distributionData.data,
+          stats: {
+            mean: mean.toFixed(2),
+            stdDev: stdDev.toFixed(2),
+            target: ((usl + lsl) / 2).toFixed(2)
+          },
+          numberOfBins: distributionData.numberOfBins
+        }
+      };
+
       setAnalysisData(analysis);
     } catch (error) {
       setError('Error analyzing data');
       console.error('Error analyzing data:', error);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleRefreshDistribution = () => {
-    if (analysisData) {
-      const newBins = distributionBins === 5 ? 10 : 5;
-      setDistributionBins(newBins);
-      setAnalysisData({
-        ...analysisData,
-        distribution: {
-          ...analysisData.distribution,
-          data: calculateDistributionData(
-            analysisData.controlCharts.xBarData.map(d => d.y),
-            newBins
-          )
-        }
-      });
     }
   };
 
@@ -422,12 +409,10 @@ export default function AnalysisScreen() {
               lsl={parseFloat(analysisData.metrics.lsl)}
               usl={parseFloat(analysisData.metrics.usl)}
               target={parseFloat(analysisData.distribution.stats.target)}
+              numberOfBins={analysisData.distribution.numberOfBins}
             />
             <DistributionChart
               {...analysisData.distribution}
-              bins={distributionBins}
-              onBinsChange={setDistributionBins}
-              onRefresh={handleRefreshDistribution}
             />
           </>
         )}

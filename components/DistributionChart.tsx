@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { VictoryChart, VictoryBar, VictoryAxis, VictoryLine } from 'victory-native';
-import { ChevronDown, RotateCcw } from 'lucide-react-native';
 
 interface DistributionChartProps {
   data: {
@@ -13,40 +12,29 @@ interface DistributionChartProps {
     stdDev: number;
     target: number;
   };
-  bins: number;
-  onBinsChange: (bins: number) => void;
-  onRefresh: () => void;
+  numberOfBins: number;
 }
 
-export function DistributionChart({ 
-  data, 
-  stats, 
-  bins, 
-  onBinsChange, 
-  onRefresh 
-}: DistributionChartProps) {
+export function DistributionChart({ data, stats, numberOfBins }: DistributionChartProps) {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Distribution Analysis</Text>
-        <View style={styles.binsSelector}>
-          <Text>Bins: {bins}</Text>
-          <ChevronDown size={16} color="#6B7280" />
-        </View>
+        <Text style={styles.binsInfo}>Number of Bins: {numberOfBins} (√n rule)</Text>
       </View>
 
       <View style={styles.statsContainer}>
         <View style={[styles.statBox, styles.meanBox]}>
           <Text style={styles.statLabel}>Mean</Text>
-          <Text style={styles.statValue}>{stats.mean.toFixed(4)}</Text>
+          <Text style={styles.statValue}>{stats.mean}</Text>
         </View>
         <View style={[styles.statBox, styles.stdDevBox]}>
           <Text style={styles.statLabel}>Std Dev</Text>
-          <Text style={styles.statValue}>{stats.stdDev.toFixed(4)}</Text>
+          <Text style={styles.statValue}>{stats.stdDev}</Text>
         </View>
         <View style={[styles.statBox, styles.targetBox]}>
           <Text style={styles.statLabel}>Target</Text>
-          <Text style={styles.statValue}>{stats.target.toFixed(4)}</Text>
+          <Text style={styles.statValue}>{stats.target}</Text>
         </View>
       </View>
 
@@ -95,10 +83,6 @@ export function DistributionChart({
           <Text style={styles.legendText}>Target</Text>
         </View>
       </View>
-
-      <View style={styles.refreshButton}>
-        <RotateCcw size={20} color="#6B7280" />
-      </View>
     </View>
   );
 }
@@ -128,13 +112,9 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#111827',
   },
-  binsSelector: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    padding: 8,
-    backgroundColor: '#F3F4F6',
-    borderRadius: 6,
+  binsInfo: {
+    fontSize: 14,
+    color: '#6B7280',
   },
   statsContainer: {
     flexDirection: 'row',
@@ -185,13 +165,5 @@ const styles = StyleSheet.create({
   legendText: {
     fontSize: 12,
     color: '#4B5563',
-  },
-  refreshButton: {
-    position: 'absolute',
-    bottom: 16,
-    right: 16,
-    backgroundColor: '#F3F4F6',
-    borderRadius: 20,
-    padding: 8,
   },
 });
