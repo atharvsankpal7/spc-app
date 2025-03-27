@@ -30,8 +30,9 @@
         "origin": false
       },
       "eas": {
-        "projectId": "72e09cae-b4d9-489c-b1a4-17abdf21e955"
+        "projectId": "ad6ae8e4-2edf-45ab-98b8-4b1951c4bdc4"
       }
-    }
+    },
+    "owner": "omiio"
   }
 }

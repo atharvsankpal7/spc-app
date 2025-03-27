@@ -6,6 +6,7 @@ import { MultiSelect } from '../../components/MultiSelect';
 import { ProcessMetrics } from '../../components/ProcessMetrics';
 import { ControlCharts } from '../../components/ControlCharts';
 import { DistributionChart } from '../../components/DistributionChart';
+import { HistogramChart } from '../../components/HistogramChart';
 import { fetchShiftData, fetchMaterialList, fetchOperationList, fetchGuageList, fetchInspectionData } from '../../api/spcApi';
 import { Search, Filter } from 'lucide-react-native';
 import '@babel/runtime/helpers/interopRequireDefault';
@@ -36,6 +37,25 @@ interface InspectionData {
   ToSpecification: string;
   ShiftCode: number;
   TrnDate: string;
+}
+
+interface ProcessMetricsProps {
+  metrics: {
+    xBar: number;
+    stdDevOverall: number;
+    stdDevWithin: number;
+    movingRange: number;
+    cp: number;
+    cpkUpper: number;
+    cpkLower: number;
+    cpk: number;
+    pp: number;
+    ppu: number;
+    ppl: number;
+    ppk: number;
+    lsl: string;
+    usl: string;
+  };
 }
 
 export default function AnalysisScreen() {
@@ -161,37 +181,39 @@ export default function AnalysisScreen() {
 
     return {
       metrics: {
-        xBar: mean,
-        stdDevOverall: stdDev,
-        stdDevWithin: stdDev,
-        movingRange: rangeMean,
-        cp,
-        cpkUpper: cpu,
-        cpkLower: cpl,
-        cpk,
-        pp: cp,
-        ppu: cpu,
-        ppl: cpl,
-        ppk: cpk
+        xBar: mean.toFixed(2),
+        stdDevOverall: stdDev.toFixed(2),
+        stdDevWithin: stdDev.toFixed(2),
+        movingRange: rangeMean.toFixed(2),
+        cp: cp.toFixed(2),
+        cpkUpper: cpu.toFixed(2),
+        cpkLower: cpl.toFixed(2),
+        cpk: cpk.toFixed(2),
+        pp: cp.toFixed(2),
+        ppu: cpu.toFixed(2),
+        ppl: cpl.toFixed(2),
+        ppk: cpk.toFixed(2),
+        lsl: lsl.toFixed(2),
+        usl: usl.toFixed(2)
       },
       controlCharts: {
         xBarData,
         rangeData,
         limits: {
-          xBarUcl,
-          xBarLcl,
-          xBarMean: mean,
-          rangeUcl,
-          rangeLcl,
-          rangeMean
+          xBarUcl: xBarUcl.toFixed(2),
+          xBarLcl: xBarLcl.toFixed(2),
+          xBarMean: mean.toFixed(2),
+          rangeUcl: rangeUcl.toFixed(2),
+          rangeLcl: rangeLcl.toFixed(2),
+          rangeMean: rangeMean.toFixed(2)
         }
       },
       distribution: {
         data: calculateDistributionData(specifications, distributionBins),
         stats: {
-          mean,
-          stdDev,
-          target: (usl + lsl) / 2
+          mean: mean.toFixed(2),
+          stdDev: stdDev.toFixed(2),
+          target: ((usl + lsl) / 2).toFixed(2)
         }
       }
     };
@@ -395,6 +417,12 @@ export default function AnalysisScreen() {
           <>
             <ProcessMetrics metrics={analysisData.metrics} />
             <ControlCharts {...analysisData.controlCharts} />
+            <HistogramChart 
+              data={analysisData.distribution.data}
+              lsl={parseFloat(analysisData.metrics.lsl)}
+              usl={parseFloat(analysisData.metrics.usl)}
+              target={parseFloat(analysisData.distribution.stats.target)}
+            />
             <DistributionChart
               {...analysisData.distribution}
               bins={distributionBins}

@@ -4,15 +4,34 @@ import { format } from 'date-fns';
 const BASE_URL = 'http://10.10.1.7:8304/api';
 
 const headers = {
-  'Content-Type': 'application/json'
+  'Content-Type': 'application/json',  
+  'Access-Control-Allow-Origin': '*'
 };
 
-export const fetchShiftData = async () => {
+// 1. Get Shift List
+export interface ShiftData {
+  ShiftId: number;
+  ShiftName: string;
+}
+
+export interface ShiftResponse {
+  data: ShiftData[];
+  success: boolean;
+  message: string;
+}
+
+export const fetchShiftData = async (): Promise<ShiftResponse> => {
   const response = await axios.get(`${BASE_URL}/commonappservices/getshiftdatalist`);
   return response.data;
 };
 
-export const fetchMaterialList = async (fromDate: Date, toDate: Date, shiftIds: number[]) => {
+// 2. Get Material List
+export interface MaterialData {
+  MaterialCode: string;
+  MaterialName: string;
+}
+
+export const fetchMaterialList = async (fromDate: Date, toDate: Date, shiftIds: number[]): Promise<MaterialData[]> => {
   const params = {
     FromDate: format(fromDate, 'dd/MM/yyyy'),
     ToDate: format(toDate, 'dd/MM/yyyy'),
@@ -29,7 +48,18 @@ export const fetchMaterialList = async (fromDate: Date, toDate: Date, shiftIds: 
   return response.data;
 };
 
-export const fetchOperationList = async (fromDate: Date, toDate: Date, materialCode: string, shiftIds: number[]) => {
+// 3. Get Operation List
+export interface OperationData {
+  OperationCode: string;
+  OperationName: string;
+}
+
+export const fetchOperationList = async (
+  fromDate: Date, 
+  toDate: Date, 
+  materialCode: string, 
+  shiftIds: number[]
+): Promise<OperationData[]> => {
   const params = {
     FromDate: format(fromDate, 'dd/MM/yyyy'),
     ToDate: format(toDate, 'dd/MM/yyyy'),
@@ -47,7 +77,19 @@ export const fetchOperationList = async (fromDate: Date, toDate: Date, materialC
   return response.data;
 };
 
-export const fetchGuageList = async (fromDate: Date, toDate: Date, materialCode: string, operationCode: string, shiftIds: number[]) => {
+// 4. Get Gauge List
+export interface GuageData {
+  GuageCode: string;
+  GuageName: string;
+}
+
+export const fetchGuageList = async (
+  fromDate: Date, 
+  toDate: Date, 
+  materialCode: string, 
+  operationCode: string, 
+  shiftIds: number[]
+): Promise<GuageData[]> => {
   const params = {
     FromDate: format(fromDate, 'dd/MM/yyyy'),
     ToDate: format(toDate, 'dd/MM/yyyy'),
@@ -66,6 +108,18 @@ export const fetchGuageList = async (fromDate: Date, toDate: Date, materialCode:
   return response.data;
 };
 
+// 5. Get PIR Inspection Data List
+export interface InspectionData {
+  TrnDate: string;
+  ShiftCode: number;
+  ShiftName: string;
+  GuageCode: string;
+  GuageName: string;
+  FromSpecification: string;
+  ToSpecification: string;
+  ActualSpecification: string;
+}
+
 export const fetchInspectionData = async (
   fromDate: Date,
   toDate: Date,
@@ -73,7 +127,7 @@ export const fetchInspectionData = async (
   operationCode: string,
   guageCode: string,
   shiftIds: number[]
-) => {
+): Promise<InspectionData[]> => {
   const params = {
     FromDate: format(fromDate, 'dd/MM/yyyy'),
     ToDate: format(toDate, 'dd/MM/yyyy'),
