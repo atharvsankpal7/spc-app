@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { VictoryChart, VictoryBar, VictoryAxis, VictoryLine } from 'victory-native';
 
 interface HistogramChartProps {
@@ -14,63 +14,71 @@ interface HistogramChartProps {
 }
 
 export function HistogramChart({ data, lsl, usl, target, numberOfBins }: HistogramChartProps) {
+  // Calculate width based on number of bins
+  const chartWidth = Math.max(350, numberOfBins * 50); // Minimum 350px or 50px per bin
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Histogram</Text>
 
-      <VictoryChart
-        padding={{ top: 40, bottom: 50, left: 50, right: 20 }}
-        height={300}
-      >
-        <VictoryAxis
-          style={{
-            grid: { stroke: '#E5E7EB', strokeDasharray: '5,5' },
-          }}
-        />
-        <VictoryAxis
-          dependentAxis
-          label="Frequency"
-          style={{
-            grid: { stroke: '#E5E7EB', strokeDasharray: '5,5' },
-            axisLabel: { padding: 35 },
-          }}
-        />
-        <VictoryBar
-          data={data}
-          style={{ data: { fill: '#93C5FD' } }}
-          barWidth={300 / numberOfBins}
-        />
-        <VictoryLine
-          x={() => lsl}
-          style={{ 
-            data: { 
-              stroke: '#EF4444', 
-              strokeWidth: 2,
-              strokeDasharray: '5,5'
-            } 
-          }}
-        />
-        <VictoryLine
-          x={() => target}
-          style={{ 
-            data: { 
-              stroke: '#22C55E', 
-              strokeWidth: 2,
-              strokeDasharray: '5,5'
-            } 
-          }}
-        />
-        <VictoryLine
-          x={() => usl}
-          style={{ 
-            data: { 
-              stroke: '#EF4444', 
-              strokeWidth: 2,
-              strokeDasharray: '5,5'
-            } 
-          }}
-        />
-      </VictoryChart>
+      <ScrollView horizontal showsHorizontalScrollIndicator={true}>
+        <View style={{ width: chartWidth }}>
+          <VictoryChart
+            padding={{ top: 40, bottom: 50, left: 50, right: 20 }}
+            height={300}
+            width={chartWidth}
+          >
+            <VictoryAxis
+              style={{
+                grid: { stroke: '#E5E7EB', strokeDasharray: '5,5' },
+              }}
+            />
+            <VictoryAxis
+              dependentAxis
+              label="Frequency"
+              style={{
+                grid: { stroke: '#E5E7EB', strokeDasharray: '5,5' },
+                axisLabel: { padding: 35 },
+              }}
+            />
+            <VictoryBar
+              data={data}
+              style={{ data: { fill: '#93C5FD' } }}
+              barWidth={chartWidth / numberOfBins}
+            />
+            <VictoryLine
+              x={() => lsl}
+              style={{ 
+                data: { 
+                  stroke: '#EF4444', 
+                  strokeWidth: 2,
+                  strokeDasharray: '5,5'
+                } 
+              }}
+            />
+            <VictoryLine
+              x={() => target}
+              style={{ 
+                data: { 
+                  stroke: '#22C55E', 
+                  strokeWidth: 2,
+                  strokeDasharray: '5,5'
+                } 
+              }}
+            />
+            <VictoryLine
+              x={() => usl}
+              style={{ 
+                data: { 
+                  stroke: '#EF4444', 
+                  strokeWidth: 2,
+                  strokeDasharray: '5,5'
+                } 
+              }}
+            />
+          </VictoryChart>
+        </View>
+      </ScrollView>
 
       <View style={styles.legend}>
         <View style={styles.legendItem}>

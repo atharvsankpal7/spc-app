@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { VictoryChart, VictoryLine, VictoryScatter, VictoryAxis, VictoryLabel } from 'victory-native';
 
 interface ControlChartsProps {
@@ -16,6 +16,9 @@ interface ControlChartsProps {
 }
 
 export function ControlCharts({ xBarData, rangeData, limits }: ControlChartsProps) {
+  // Calculate width based on number of data points
+  const chartWidth = Math.max(350, xBarData.length * 50); // Minimum 350px or 50px per point
+
   return (
     <View style={styles.container}>
       <View style={styles.chartContainer}>
@@ -41,44 +44,49 @@ export function ControlCharts({ xBarData, rangeData, limits }: ControlChartsProp
           </View>
         </View>
 
-        <VictoryChart
-          padding={{ top: 40, bottom: 50, left: 50, right: 20 }}
-          height={250}
-        >
-          <VictoryAxis
-            tickFormat={(t) => `G${t}`}
-            style={{
-              grid: { stroke: '#E5E7EB', strokeDasharray: '5,5' },
-            }}
-          />
-          <VictoryAxis
-            dependentAxis
-            style={{
-              grid: { stroke: '#E5E7EB', strokeDasharray: '5,5' },
-            }}
-          />
-          <VictoryLine
-            data={xBarData}
-            style={{ data: { stroke: '#3B82F6', strokeWidth: 2 } }}
-          />
-          <VictoryScatter
-            data={xBarData}
-            size={5}
-            style={{ data: { fill: '#3B82F6' } }}
-          />
-          <VictoryLine
-            y={() => limits.xBarUcl}
-            style={{ data: { stroke: '#EF4444', strokeDasharray: '5,5' } }}
-          />
-          <VictoryLine
-            y={() => limits.xBarMean}
-            style={{ data: { stroke: '#8B5CF6', strokeWidth: 2 } }}
-          />
-          <VictoryLine
-            y={() => limits.xBarLcl}
-            style={{ data: { stroke: '#EF4444', strokeDasharray: '5,5' } }}
-          />
-        </VictoryChart>
+        <ScrollView horizontal showsHorizontalScrollIndicator={true}>
+          <View style={{ width: chartWidth }}>
+            <VictoryChart
+              padding={{ top: 40, bottom: 50, left: 50, right: 20 }}
+              height={250}
+              width={chartWidth}
+            >
+              <VictoryAxis
+                tickFormat={(t) => `G${t}`}
+                style={{
+                  grid: { stroke: '#E5E7EB', strokeDasharray: '5,5' },
+                }}
+              />
+              <VictoryAxis
+                dependentAxis
+                style={{
+                  grid: { stroke: '#E5E7EB', strokeDasharray: '5,5' },
+                }}
+              />
+              <VictoryLine
+                data={xBarData}
+                style={{ data: { stroke: '#3B82F6', strokeWidth: 2 } }}
+              />
+              <VictoryScatter
+                data={xBarData}
+                size={5}
+                style={{ data: { fill: '#3B82F6' } }}
+              />
+              <VictoryLine
+                y={() => limits.xBarUcl}
+                style={{ data: { stroke: '#EF4444', strokeDasharray: '5,5' } }}
+              />
+              <VictoryLine
+                y={() => limits.xBarMean}
+                style={{ data: { stroke: '#8B5CF6', strokeWidth: 2 } }}
+              />
+              <VictoryLine
+                y={() => limits.xBarLcl}
+                style={{ data: { stroke: '#EF4444', strokeDasharray: '5,5' } }}
+              />
+            </VictoryChart>
+          </View>
+        </ScrollView>
       </View>
 
       <View style={styles.chartContainer}>
@@ -101,44 +109,49 @@ export function ControlCharts({ xBarData, rangeData, limits }: ControlChartsProp
           </View>
         </View>
 
-        <VictoryChart
-          padding={{ top: 40, bottom: 50, left: 50, right: 20 }}
-          height={250}
-        >
-          <VictoryAxis
-            tickFormat={(t) => `G${t}`}
-            style={{
-              grid: { stroke: '#E5E7EB', strokeDasharray: '5,5' },
-            }}
-          />
-          <VictoryAxis
-            dependentAxis
-            style={{
-              grid: { stroke: '#E5E7EB', strokeDasharray: '5,5' },
-            }}
-          />
-          <VictoryLine
-            data={rangeData}
-            style={{ data: { stroke: '#3B82F6', strokeWidth: 2 } }}
-          />
-          <VictoryScatter
-            data={rangeData}
-            size={5}
-            style={{ data: { fill: '#3B82F6' } }}
-          />
-          <VictoryLine
-            y={() => limits.rangeUcl}
-            style={{ data: { stroke: '#EF4444', strokeDasharray: '5,5' } }}
-          />
-          <VictoryLine
-            y={() => limits.rangeMean}
-            style={{ data: { stroke: '#8B5CF6', strokeWidth: 2 } }}
-          />
-          <VictoryLine
-            y={() => limits.rangeLcl}
-            style={{ data: { stroke: '#EF4444', strokeDasharray: '5,5' } }}
-          />
-        </VictoryChart>
+        <ScrollView horizontal showsHorizontalScrollIndicator={true}>
+          <View style={{ width: chartWidth }}>
+            <VictoryChart
+              padding={{ top: 40, bottom: 50, left: 50, right: 20 }}
+              height={250}
+              width={chartWidth}
+            >
+              <VictoryAxis
+                tickFormat={(t) => `G${t}`}
+                style={{
+                  grid: { stroke: '#E5E7EB', strokeDasharray: '5,5' },
+                }}
+              />
+              <VictoryAxis
+                dependentAxis
+                style={{
+                  grid: { stroke: '#E5E7EB', strokeDasharray: '5,5' },
+                }}
+              />
+              <VictoryLine
+                data={rangeData}
+                style={{ data: { stroke: '#3B82F6', strokeWidth: 2 } }}
+              />
+              <VictoryScatter
+                data={rangeData}
+                size={5}
+                style={{ data: { fill: '#3B82F6' } }}
+              />
+              <VictoryLine
+                y={() => limits.rangeUcl}
+                style={{ data: { stroke: '#EF4444', strokeDasharray: '5,5' } }}
+              />
+              <VictoryLine
+                y={() => limits.rangeMean}
+                style={{ data: { stroke: '#8B5CF6', strokeWidth: 2 } }}
+              />
+              <VictoryLine
+                y={() => limits.rangeLcl}
+                style={{ data: { stroke: '#EF4444', strokeDasharray: '5,5' } }}
+              />
+            </VictoryChart>
+          </View>
+        </ScrollView>
       </View>
     </View>
   );

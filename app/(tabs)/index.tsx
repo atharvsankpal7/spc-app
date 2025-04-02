@@ -53,8 +53,8 @@ interface ProcessMetricsProps {
     ppu: number;
     ppl: number;
     ppk: number;
-    lsl: string;
-    usl: string;
+    lsl: number;
+    usl: number;
   };
 }
 
@@ -229,39 +229,39 @@ export default function AnalysisScreen() {
 
       const analysis = {
         metrics: {
-          xBar: mean.toFixed(2),
-          stdDevOverall: stdDev.toFixed(2),
-          stdDevWithin: stdDev.toFixed(2),
-          movingRange: rangeMean.toFixed(2),
-          cp: cp.toFixed(2),
-          cpkUpper: cpu.toFixed(2),
-          cpkLower: cpl.toFixed(2),
-          cpk: cpk.toFixed(2),
-          pp: cp.toFixed(2),
-          ppu: cpu.toFixed(2),
-          ppl: cpl.toFixed(2),
-          ppk: cpk.toFixed(2),
-          lsl: lsl.toFixed(2),
-          usl: usl.toFixed(2)
+          xBar: Number(mean.toFixed(2)),
+          stdDevOverall: Number(stdDev.toFixed(2)),
+          stdDevWithin: Number(stdDev.toFixed(2)),
+          movingRange: Number(rangeMean.toFixed(2)),
+          cp: Number(cp.toFixed(2)),
+          cpkUpper: Number(cpu.toFixed(2)),
+          cpkLower: Number(cpl.toFixed(2)),
+          cpk: Number(cpk.toFixed(2)),
+          pp: Number(cp.toFixed(2)),
+          ppu: Number(cpu.toFixed(2)),
+          ppl: Number(cpl.toFixed(2)),
+          ppk: Number(cpk.toFixed(2)),
+          lsl: Number(lsl.toFixed(2)),
+          usl: Number(usl.toFixed(2))
         },
         controlCharts: {
           xBarData,
           rangeData,
           limits: {
-            xBarUcl: xBarUcl.toFixed(2),
-            xBarLcl: xBarLcl.toFixed(2),
-            xBarMean: mean.toFixed(2),
-            rangeUcl: rangeUcl.toFixed(2),
-            rangeLcl: rangeLcl.toFixed(2),
-            rangeMean: rangeMean.toFixed(2)
+            xBarUcl: Number(xBarUcl.toFixed(2)),
+            xBarLcl: Number(xBarLcl.toFixed(2)),
+            xBarMean: Number(mean.toFixed(2)),
+            rangeUcl: Number(rangeUcl.toFixed(2)),
+            rangeLcl: Number(rangeLcl.toFixed(2)),
+            rangeMean: Number(rangeMean.toFixed(2))
           }
         },
         distribution: {
           data: distributionData.data,
           stats: {
-            mean: mean.toFixed(2),
-            stdDev: stdDev.toFixed(2),
-            target: ((usl + lsl) / 2).toFixed(2)
+            mean: Number(mean.toFixed(2)),
+            stdDev: Number(stdDev.toFixed(2)),
+            target: Number(((usl + lsl) / 2).toFixed(2))
           },
           numberOfBins: distributionData.numberOfBins
         }

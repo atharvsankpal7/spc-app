@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { VictoryChart, VictoryBar, VictoryAxis, VictoryLine } from 'victory-native';
 
 interface DistributionChartProps {
@@ -16,6 +16,9 @@ interface DistributionChartProps {
 }
 
 export function DistributionChart({ data, stats, numberOfBins }: DistributionChartProps) {
+  // Calculate width based on number of data points
+  const chartWidth = Math.max(350, data.length * 50); // Minimum 350px or 50px per point
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -38,36 +41,41 @@ export function DistributionChart({ data, stats, numberOfBins }: DistributionCha
         </View>
       </View>
 
-      <VictoryChart
-        padding={{ top: 40, bottom: 50, left: 50, right: 20 }}
-        height={300}
-      >
-        <VictoryAxis
-          style={{
-            grid: { stroke: '#E5E7EB', strokeDasharray: '5,5' },
-          }}
-        />
-        <VictoryAxis
-          dependentAxis
-          label="Frequency"
-          style={{
-            grid: { stroke: '#E5E7EB', strokeDasharray: '5,5' },
-            axisLabel: { padding: 35 },
-          }}
-        />
-        <VictoryBar
-          data={data}
-          style={{ data: { fill: '#3B82F6' } }}
-        />
-        <VictoryLine
-          x={() => stats.mean}
-          style={{ data: { stroke: '#22C55E', strokeWidth: 2 } }}
-        />
-        <VictoryLine
-          x={() => stats.target}
-          style={{ data: { stroke: '#EF4444', strokeWidth: 2 } }}
-        />
-      </VictoryChart>
+      <ScrollView horizontal showsHorizontalScrollIndicator={true}>
+        <View style={{ width: chartWidth }}>
+          <VictoryChart
+            padding={{ top: 40, bottom: 50, left: 50, right: 20 }}
+            height={300}
+            width={chartWidth}
+          >
+            <VictoryAxis
+              style={{
+                grid: { stroke: '#E5E7EB', strokeDasharray: '5,5' },
+              }}
+            />
+            <VictoryAxis
+              dependentAxis
+              label="Frequency"
+              style={{
+                grid: { stroke: '#E5E7EB', strokeDasharray: '5,5' },
+                axisLabel: { padding: 35 },
+              }}
+            />
+            <VictoryBar
+              data={data}
+              style={{ data: { fill: '#3B82F6' } }}
+            />
+            <VictoryLine
+              x={() => stats.mean}
+              style={{ data: { stroke: '#22C55E', strokeWidth: 2 } }}
+            />
+            <VictoryLine
+              x={() => stats.target}
+              style={{ data: { stroke: '#EF4444', strokeWidth: 2 } }}
+            />
+          </VictoryChart>
+        </View>
+      </ScrollView>
 
       <View style={styles.legend}>
         <View style={styles.legendItem}>
